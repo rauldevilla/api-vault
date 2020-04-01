@@ -1,8 +1,9 @@
 package com.techandsolve.apivault.test;
 
 import com.techandsolve.apivault.annotations.SecurityConfiguration;
-import com.techandsolve.apivault.util.ClassScanner;
 import static org.assertj.core.api.Assertions.*;
+
+import com.techandsolve.apivault.util.ClassScanner;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class ClassScannerTest {
     @Test
     public void test_findClassesWithAnnotation() throws IOException, ClassNotFoundException {
 
-        ClassScanner scanner = new ClassScanner("com.techandsolve");
+        ClassScanner scanner = new ClassScanner();
         List<Class<?>> classes = scanner.findClassesWithAnnotation(SecurityConfiguration.class);
 
         assertThat(classes).isNotNull();
@@ -24,5 +25,6 @@ public class ClassScannerTest {
 
         assertThat(classes.size()).isGreaterThan(0);
     }
+
 
 }

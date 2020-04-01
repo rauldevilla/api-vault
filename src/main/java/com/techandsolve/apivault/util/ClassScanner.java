@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -20,20 +19,14 @@ public class ClassScanner {
     private String basePath;
     private ClassLoader classLoader;
 
+    public ClassScanner() {
+        this("");
+    }
+
     public ClassScanner(String basePackage) {
-        validateBasePackage(basePackage);
         this.basePackage = basePackage;
         this.parseBasePath(basePackage);
         loadClassLoader();
-    }
-
-    private void validateBasePackage(String basePackage) {
-        if (basePackage == null) {
-            throw new RuntimeException("basePackage can't be null");
-        }
-        if (basePackage.trim().length() == 0) {
-            throw new RuntimeException("basePackage can't be empty");
-        }
     }
 
     private void parseBasePath(String basePackage) {
@@ -63,6 +56,10 @@ public class ClassScanner {
         return fileName.substring(0, lastIndex);
     }
 
+    private static String formatPackageToScann(String packaToScann) {
+        return packaToScann != null && packaToScann.trim().length() > 0 ? packaToScann.trim() + "." : "";
+    }
+
     private void searchInResourceForClassesWithAnnotation(Class<? extends Annotation> annotationClass, File resource, String packageToScann, List<Class<?>> outputClasses) throws ClassNotFoundException {
         File base = resource;
 
@@ -72,15 +69,17 @@ public class ClassScanner {
             return;
         }
 
+        logger.debug("packageToScann: " + packageToScann);
         for (File f : files) {
             if (f.isDirectory()) {
-                searchInResourceForClassesWithAnnotation(annotationClass, f, packageToScann + "." + f.getName(), outputClasses);
+                searchInResourceForClassesWithAnnotation(annotationClass, f, formatPackageToScann(packageToScann) + f.getName(), outputClasses);
             } else if (f.getName().endsWith(".class")) {
                 Class<?> clazz = Class.forName(
                                     packageToScann + "." + cutFileExtension(f.getName()),
                                   false,
                                           this.classLoader);
                 if (classHasAnnotation(clazz, annotationClass)) {
+                    logger.info("Found class " + clazz.getName() + " annotated with " + annotationClass.getName());
                     outputClasses.add(clazz);
                 }
             }
@@ -90,14 +89,24 @@ public class ClassScanner {
 
     public List<Class<?>> findClassesWithAnnotation(Class<? extends Annotation> annotationClass) throws IOException, ClassNotFoundException {
         Enumeration<URL> resources = this.classLoader.getResources(this.basePath);
+
         if (resources == null) {
+            logger.warn("No resources found in classloader");
             return null;
         }
 
         URL resource = null;
         List<Class<?>> outputClasses = new ArrayList<>();
+
+        if (!resources.hasMoreElements()) {
+            logger.warn("Empty resources in classloader");
+        }
+
+        logger.info("Base package: " + this.basePackage);
+
         while (resources.hasMoreElements()) {
             resource = resources.nextElement();
+            logger.debug("resource -> " + resource.getFile());
             if (resource == null) {
                 logger.warn("NULL RESOURCE FOUND !!");
                 continue;

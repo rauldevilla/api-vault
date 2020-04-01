@@ -1,12 +1,34 @@
 package com.techandsolve.apivault.test;
 
+import com.techandsolve.apivault.web.filter.Resource;
+import com.techandsolve.apivault.web.filter.SecurityFilterHelper;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.Test;
 
 public class SecurityFilterHelperTest {
 
     @Test
-    public void testCredentialsBuilder() {
+    public void testHasAccess() {
+        SecurityFilterHelper securityFilterHelper = new SecurityFilterHelper();
 
+        Resource resource = new Resource();
+        resource.setUri("/this_is_the_uri");
+
+        boolean hasAccess = securityFilterHelper.hasAccess(resource);
+
+        assertThat(hasAccess).isTrue();
+    }
+
+    @Test
+    public void testDoesNotHasAccess() {
+        SecurityFilterHelper securityFilterHelper = new SecurityFilterHelper();
+
+        Resource resource = new Resource();
+        resource.setUri("/this_is_the_uri");
+
+        boolean hasAccess = securityFilterHelper.hasAccess(resource);
+
+        assertThat(hasAccess).isFalse();
     }
 
 }
