@@ -13,16 +13,9 @@ public class ClassScannerTest {
 
     @Test
     public void test_findClassesWithAnnotation() throws IOException, ClassNotFoundException {
-
         ClassScanner scanner = new ClassScanner();
         List<Class<?>> classes = scanner.findClassesWithAnnotation(SecurityConfiguration.class);
-
         assertThat(classes).isNotNull();
-
-        for (Class<?> c : classes) {
-            System.out.println("---> Resultado: " + c.getName());
-        }
-
         assertThat(classes.size()).isGreaterThan(0);
     }
 
