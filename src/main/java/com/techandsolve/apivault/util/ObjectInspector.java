@@ -75,6 +75,6 @@ public class ObjectInspector {
     }
 
     public Object invoke(Method method, Object[] params) throws IllegalAccessException, InvocationTargetException {
-        return method.invoke(this.object, params != null ? params : new Object[]{});
+        return method.invoke(this.object, params != null ? params : EMPTY_OBJECT_ARRAY);
     }
 }

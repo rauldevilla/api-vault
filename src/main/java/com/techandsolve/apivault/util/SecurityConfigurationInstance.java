@@ -81,7 +81,7 @@ public class SecurityConfigurationInstance {
         }
 
         Method accessValidationMethod = methods.get(0);
-        if (methods.size() > 0) {
+        if (methods.size() > 1) {
             logger.warn("More than ONE Access Validation method in class " + this.securityConfigurationClass.getName());
             for (Method m : methods) {
                 logger.warn("Annotated method found: " + m.getName());
