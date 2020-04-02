@@ -7,6 +7,8 @@ import java.io.IOException;
 
 public class SecurityFilter implements Filter {
 
+    private SecurityFilterHelper helper;
+
     private FilterConfig config;
 
     protected FilterConfig getFilterConfig() {
@@ -19,7 +21,9 @@ public class SecurityFilter implements Filter {
     }
 
     private boolean hasAccess(String uri) {
-        return true;
+        Resource resource = new Resource();
+        resource.setUri(uri);
+        return this.helper.hasAccess(resource);
     }
 
     private static String getURI(HttpServletRequest httpRequest) {
