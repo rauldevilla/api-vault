@@ -1,11 +1,17 @@
 package com.techandsolve.apivault.web.filter;
 
+import com.techandsolve.apivault.exception.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class SecurityFilter implements Filter {
+
+    private static Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
 
     private SecurityFilterHelper helper;
 
@@ -23,7 +29,12 @@ public class SecurityFilter implements Filter {
     private boolean hasAccess(String uri) {
         Resource resource = new Resource();
         resource.setUri(uri);
-        return this.helper.hasAccess(resource);
+        try {
+            return this.helper.hasAccess(resource);
+        } catch (ConfigurationException e) {
+            logger.error("Exception in hasAccess", e);
+            return false;
+        }
     }
 
     private static String getURI(HttpServletRequest httpRequest) {

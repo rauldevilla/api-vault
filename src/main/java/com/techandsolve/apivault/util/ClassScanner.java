@@ -69,7 +69,6 @@ public class ClassScanner {
             return;
         }
 
-        logger.debug("packageToScann: " + packageToScann);
         for (File f : files) {
             if (f.isDirectory()) {
                 searchInResourceForClassesWithAnnotation(annotationClass, f, formatPackageToScann(packageToScann) + f.getName(), outputClasses);
@@ -79,7 +78,6 @@ public class ClassScanner {
                                   false,
                                           this.classLoader);
                 if (classHasAnnotation(clazz, annotationClass)) {
-                    logger.info("Found class " + clazz.getName() + " annotated with " + annotationClass.getName());
                     outputClasses.add(clazz);
                 }
             }
@@ -102,11 +100,8 @@ public class ClassScanner {
             logger.warn("Empty resources in classloader");
         }
 
-        logger.info("Base package: " + this.basePackage);
-
         while (resources.hasMoreElements()) {
             resource = resources.nextElement();
-            logger.debug("resource -> " + resource.getFile());
             if (resource == null) {
                 logger.warn("NULL RESOURCE FOUND !!");
                 continue;
