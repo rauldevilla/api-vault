@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class SecurityConfigurationInstance {
@@ -16,6 +18,7 @@ public class SecurityConfigurationInstance {
     private static SecurityConfigurationInstance instance;
     private Class<?> securityConfigurationClass;
     private Object securityConfigurationObject;
+    private ObjectInspector objectInspector;
 
     private SecurityConfigurationInstance() {
     }
@@ -36,9 +39,38 @@ public class SecurityConfigurationInstance {
         return instance;
     }
 
-    private void loadConfiguration() throws ClassNotFoundException, IOException, ConfigurationException {
+    private static Constructor getDefaultConstructor(Class<?> clazz) {
+        for (Constructor c : clazz.getDeclaredConstructors()) {
+            if (c.getParameterCount() == 0) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private static Object getNewInstanceUsingDefaultConstrutor(String className) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Class<?> clazz = Class.
+                forName(className,
+                        true,
+                        Thread.currentThread().getContextClassLoader());
+        Constructor defaulConstructor = getDefaultConstructor(clazz);
+
+        if (defaulConstructor == null) {
+            throw new NoSuchMethodException("Class " + className + " doesn't have a default constructor");
+        }
+
+        return defaulConstructor.newInstance(new Object[]{});
+    }
+
+    private void loadConfiguration() throws ConfigurationException {
         ClassScanner scanner = new ClassScanner();
-        List<Class<?>> annotatedClassses = scanner.findClassesWithAnnotation(SecurityConfiguration.class);
+        List<Class<?>> annotatedClassses;
+
+        try {
+            annotatedClassses = scanner.findClassesWithAnnotation(SecurityConfiguration.class);
+        } catch (ClassNotFoundException | IOException e) {
+            throw new ConfigurationException(e);
+        }
 
         if (annotatedClassses == null || annotatedClassses.size() == 0) {
             throw new ConfigurationException("SecurityConfiguration not found");
@@ -51,11 +83,25 @@ public class SecurityConfigurationInstance {
             }
         }
         logger.info("Working with SecurityConfiguration: " + this.securityConfigurationClass.getName());
-        this.securityConfigurationObject = Class.forName(this.securityConfigurationClass.getName(), true, Thread.currentThread().getContextClassLoader());
+
+        try {
+            this.securityConfigurationObject = getNewInstanceUsingDefaultConstrutor(this.securityConfigurationClass.getName());
+            logger.info("Class " + this.securityConfigurationClass.getName() + " has been successfully instantiated");
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new ConfigurationException(e);
+        }
+        this.objectInspector = new ObjectInspector(this.securityConfigurationObject);
     }
 
-    public boolean hasAccess(Resource resource) {
-        return true;
+
+
+    public boolean hasAccess(Resource resource) throws ConfigurationException {
+        try {
+            Object valueObject = this.objectInspector.getObjectAnnotationAttributeValue(SecurityConfiguration.class, "acceptByDefault");
+            return (Boolean) valueObject;
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
 }
