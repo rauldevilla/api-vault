@@ -25,7 +25,7 @@ public class SecurityFilterHelperTest {
         SecurityFilterHelper securityFilterHelper = new SecurityFilterHelper();
 
         Resource resource = new Resource();
-        resource.setUri("/this_is_the_uri");
+        resource.setUri("/this_is_the_uri_2");
 
         boolean hasAccess = securityFilterHelper.hasAccess(resource);
 

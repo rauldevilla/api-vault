@@ -1,5 +1,6 @@
 package com.techandsolve.apivault.util;
 
+import com.techandsolve.apivault.annotations.AccessValidator;
 import com.techandsolve.apivault.annotations.SecurityConfiguration;
 import com.techandsolve.apivault.exception.ConfigurationException;
 import com.techandsolve.apivault.web.filter.Resource;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class SecurityConfigurationInstance {
@@ -39,29 +41,6 @@ public class SecurityConfigurationInstance {
         return instance;
     }
 
-    private static Constructor getDefaultConstructor(Class<?> clazz) {
-        for (Constructor c : clazz.getDeclaredConstructors()) {
-            if (c.getParameterCount() == 0) {
-                return c;
-            }
-        }
-        return null;
-    }
-
-    private static Object getNewInstanceUsingDefaultConstrutor(String className) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Class<?> clazz = Class.
-                forName(className,
-                        true,
-                        Thread.currentThread().getContextClassLoader());
-        Constructor defaulConstructor = getDefaultConstructor(clazz);
-
-        if (defaulConstructor == null) {
-            throw new NoSuchMethodException("Class " + className + " doesn't have a default constructor");
-        }
-
-        return defaulConstructor.newInstance(new Object[]{});
-    }
-
     private void loadConfiguration() throws ConfigurationException {
         ClassScanner scanner = new ClassScanner();
         List<Class<?>> annotatedClassses;
@@ -85,7 +64,7 @@ public class SecurityConfigurationInstance {
         logger.info("Working with SecurityConfiguration: " + this.securityConfigurationClass.getName());
 
         try {
-            this.securityConfigurationObject = getNewInstanceUsingDefaultConstrutor(this.securityConfigurationClass.getName());
+            this.securityConfigurationObject = ObjectInspector.getNewInstanceUsingDefaultConstrutor(this.securityConfigurationClass.getName());
             logger.info("Class " + this.securityConfigurationClass.getName() + " has been successfully instantiated");
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new ConfigurationException(e);
@@ -94,14 +73,54 @@ public class SecurityConfigurationInstance {
     }
 
 
+    private Method getAccessValidationMethod() {
+        List<Method> methods = this.objectInspector.getAnnotatedMethods(AccessValidator.class);
+
+        if (methods == null || methods.size() == 0) {
+            return null;
+        }
+
+        Method accessValidationMethod = methods.get(0);
+        if (methods.size() > 0) {
+            logger.warn("More than ONE Access Validation method in class " + this.securityConfigurationClass.getName());
+            for (Method m : methods) {
+                logger.warn("Annotated method found: " + m.getName());
+            }
+        }
+
+        logger.info("Using Access Validation method: " + accessValidationMethod.getName());
+
+        return accessValidationMethod;
+    }
+
+    public boolean executeConfigurationAccessValidationMethod(Method accessValidationMethod, Resource resource) throws IllegalAccessException, InvocationTargetException {
+        return (Boolean) this.objectInspector.invoke(accessValidationMethod, new Object[]{resource});
+    }
 
     public boolean hasAccess(Resource resource) throws ConfigurationException {
+
+        Object valueObject;
+        boolean acceptByDefault;
+
         try {
-            Object valueObject = this.objectInspector.getObjectAnnotationAttributeValue(SecurityConfiguration.class, "acceptByDefault");
-            return (Boolean) valueObject;
+            valueObject = this.objectInspector.getObjectAnnotationAttributeValue(SecurityConfiguration.class, "acceptByDefault");
+            acceptByDefault = (Boolean) valueObject;
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new ConfigurationException(e);
         }
+
+        Method accessValidationMethod = getAccessValidationMethod();
+        if (accessValidationMethod != null) {
+            try {
+                return executeConfigurationAccessValidationMethod(accessValidationMethod, resource);
+            } catch (Exception e) {
+                logger.error("Error executing Access Validation method " + accessValidationMethod.getName() + " for resource " + resource + ". " +
+                             (acceptByDefault ? "Allowing access" : "Rejecting access") + " by default", e);
+                return acceptByDefault;
+            }
+        }
+
+        return acceptByDefault;
     }
 
 }

@@ -12,7 +12,7 @@ public class DummySecurituConfiguration {
 
     @AccessValidator
     public boolean hasAccess(Resource resource) {
-        return true;
+        return resource.getUri().equals("/this_is_the_uri");
     }
 
     @CredentialsValidator

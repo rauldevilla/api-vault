@@ -11,4 +11,9 @@ public class Resource {
     public void setUri(String uri) {
         this.uri = uri;
     }
+
+    @Override
+    public String toString() {
+        return this.uri;
+    }
 }
