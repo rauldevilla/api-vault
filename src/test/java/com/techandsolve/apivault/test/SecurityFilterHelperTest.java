@@ -32,4 +32,9 @@ public class SecurityFilterHelperTest {
         assertThat(hasAccess).isFalse();
     }
 
+    @Test
+    public void testValidCredentials() {
+
+    }
+
 }

@@ -9,4 +9,8 @@ public class SecurityFilterHelper {
         return SecurityConfigurationInstance.getInstance().hasAccess(resource);
     }
 
+    public boolean validaCredentials(Credentials credentials) {
+        return true;
+    }
+
 }
