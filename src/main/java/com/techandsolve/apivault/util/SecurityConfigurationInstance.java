@@ -61,20 +61,20 @@ public class SecurityConfigurationInstance {
         return acceptResourcesByDefault;
     }
 
-    public boolean isAutheticated(Credentials credentials) {
+    public boolean isAuthenticated(Credentials credentials) {
         final Method credentialsValidationMethod = this.securityConfigurationInstanceValues.getCredentialsValidationMethod();
-        final boolean acceptCredencialsByDefault = this.securityConfigurationInstanceValues.getAcceptCredentialsByDefault();
+        final boolean acceptCredentialsByDefault = this.securityConfigurationInstanceValues.getAcceptCredentialsByDefault();
         if (credentialsValidationMethod != null) {
             try {
                 logger.debug("Validating credentials \"" + credentials + "\" ...");
                 return executeConfigurationCredentialsValidationMethod(credentialsValidationMethod, credentials);
             } catch (Exception e) {
                 logger.error("Error executing Credentials Validation method " + credentialsValidationMethod.getName() + " for credentials " + credentials + ". " +
-                        (acceptCredencialsByDefault ? "Accepting credentials" : "Rejecting credentials") + " by default", e);
-                return acceptCredencialsByDefault;
+                        (acceptCredentialsByDefault ? "Accepting credentials" : "Rejecting credentials") + " by default", e);
+                return acceptCredentialsByDefault;
             }
         }
 
-        return acceptCredencialsByDefault;
+        return acceptCredentialsByDefault;
     }
 }

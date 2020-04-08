@@ -10,7 +10,7 @@ public class SecurityFilterHelper {
     }
 
     public boolean isAuthenticated(Credentials credentials) throws ConfigurationException {
-        return SecurityConfigurationInstance.getInstance().isAutheticated(credentials);
+        return SecurityConfigurationInstance.getInstance().isAuthenticated(credentials);
     }
 
 }
