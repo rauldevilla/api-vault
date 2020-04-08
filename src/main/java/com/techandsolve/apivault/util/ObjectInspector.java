@@ -57,7 +57,7 @@ public class ObjectInspector {
         return attributeValue;
     }
 
-    public List<Method> getAnnotatedMethods(Class<? extends Annotation> annotationType) {
+    public List<Method> getAnnotatedMethods(Class<? extends Annotation> annotationType) throws ClassNotFoundException {
 
         Method[] methods = this.object.getClass().getMethods();
         if (methods == null || methods.length == 0) {
@@ -66,6 +66,7 @@ public class ObjectInspector {
 
         List<Method> annotatedMethods = new ArrayList<>();
         for (Method m : methods) {
+            logger.debug("Annotation: " + annotationType.getName() + " - Method: " + m.getName() + " [" + m.isAnnotationPresent(annotationType) + "]");
             if (m.isAnnotationPresent(annotationType)) {
                 annotatedMethods.add(m);
             }

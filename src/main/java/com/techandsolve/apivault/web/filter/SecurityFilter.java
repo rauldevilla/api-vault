@@ -37,14 +37,38 @@ public class SecurityFilter implements Filter {
         }
     }
 
+    private boolean isAuthenticated(HttpServletRequest request) {
+        Credentials credentials = null;
+        try {
+            return this.helper.isAuthenticated(credentials);
+        } catch (ConfigurationException e) {
+            logger.error("Error validating credentials " + credentials, e);
+            return false;
+        }
+    }
+
     private static String getURI(HttpServletRequest httpRequest) {
         return httpRequest.getRequestURI();
+    }
+
+    protected static String getRemoteAddress(HttpServletRequest request) {
+        String remoteAddress = request.getHeader("X-FORWARDED-FOR");
+        if (remoteAddress == null || "".equals(remoteAddress.trim())) {
+            remoteAddress = request.getRemoteAddr();
+        }
+        return remoteAddress;
     }
 
     @Override
     public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        if (!isAuthenticated(httpRequest)) {
+            logger.warn("Invalid authentication from " + getRemoteAddress(httpRequest));
+            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         String uri = getURI(httpRequest);
         if (!hasAccess(uri)) {

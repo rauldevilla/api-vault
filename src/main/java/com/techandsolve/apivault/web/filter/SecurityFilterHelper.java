@@ -9,8 +9,8 @@ public class SecurityFilterHelper {
         return SecurityConfigurationInstance.getInstance().hasAccess(resource);
     }
 
-    public boolean validaCredentials(Credentials credentials) {
-        return true;
+    public boolean isAuthenticated(Credentials credentials) throws ConfigurationException {
+        return SecurityConfigurationInstance.getInstance().isAutheticated(credentials);
     }
 
 }

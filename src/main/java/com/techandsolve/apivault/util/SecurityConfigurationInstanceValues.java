@@ -1,6 +1,7 @@
 package com.techandsolve.apivault.util;
 
 import com.techandsolve.apivault.annotations.AccessValidator;
+import com.techandsolve.apivault.annotations.CredentialsValidator;
 import com.techandsolve.apivault.annotations.SecurityConfiguration;
 import com.techandsolve.apivault.exception.ConfigurationException;
 import org.slf4j.Logger;
@@ -15,18 +16,28 @@ class SecurityConfigurationInstanceValues {
 
     private static Logger logger = LoggerFactory.getLogger(SecurityConfigurationInstanceValues.class);
 
-    private boolean acceptByDefault = true;
+    private boolean acceptResourcesByDefault = true;
+    private boolean acceptCredentialsByDefault = false;
     private Class<?> securityConfigurationClass;
     private Object securityConfigurationObject;
     private Method accessValidationMethod;
+    private Method credentialsValidationMethod;
     private ObjectInspector objectInspector;
 
-    boolean getAcceptByDefault() {
-        return this.acceptByDefault;
+    boolean getAcceptResourcesByDefault() {
+        return this.acceptResourcesByDefault;
+    }
+
+    boolean getAcceptCredentialsByDefault() {
+        return this.acceptCredentialsByDefault;
     }
 
     Method getAccessValidationMethod() {
         return accessValidationMethod;
+    }
+
+    Method getCredentialsValidationMethod() {
+        return credentialsValidationMethod;
     }
 
     ObjectInspector getObjectInspector() {
@@ -66,8 +77,14 @@ class SecurityConfigurationInstanceValues {
         this.objectInspector = new ObjectInspector(this.securityConfigurationObject);
     }
 
-    void loadAccessValidationMethod() {
-        List<Method> methods = this.objectInspector.getAnnotatedMethods(AccessValidator.class);
+    void loadAccessValidationMethod() throws ConfigurationException {
+        List<Method> methods;
+
+        try {
+            methods = this.objectInspector.getAnnotatedMethods(AccessValidator.class);
+        } catch (ClassNotFoundException e) {
+            throw new ConfigurationException(e);
+        }
         this.accessValidationMethod = null;
 
         if (methods == null || methods.size() == 0) {
@@ -86,19 +103,56 @@ class SecurityConfigurationInstanceValues {
         logger.info("Using Access Validation method: " + accessValidationMethod.getName());
     }
 
-    void loadAcceptByDefault() throws ConfigurationException {
+    void loadCredentialsValidationMethod() throws ConfigurationException {
+        List<Method> methods;
+
         try {
-            this.acceptByDefault  = (Boolean) this.objectInspector.getObjectAnnotationAttributeValue(SecurityConfiguration.class, "acceptByDefault");
+            methods = this.objectInspector.getAnnotatedMethods(CredentialsValidator.class);
+        } catch (ClassNotFoundException e) {
+            throw new ConfigurationException(e);
+        }
+
+        this.credentialsValidationMethod = null;
+
+        if (methods == null || methods.size() == 0) {
+            logger.warn("Credentials validation method not found");
+            return;
+        }
+
+        this.credentialsValidationMethod = methods.get(0);
+        if (methods.size() > 1) {
+            logger.warn("More than ONE Credentials Validation method in class " + this.securityConfigurationClass.getName());
+            for (Method m : methods) {
+                logger.warn("Annotated method found: " + m.getName());
+            }
+        }
+
+        logger.info("Using Credentials Validation method: " + credentialsValidationMethod.getName());
+    }
+
+    void loadAcceptResourcesByDefault() throws ConfigurationException {
+        try {
+            this.acceptResourcesByDefault = (Boolean) this.objectInspector.getObjectAnnotationAttributeValue(SecurityConfiguration.class, "acceptResourcesByDefault");
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new ConfigurationException(e);
         }
     }
 
-    void load() throws ConfigurationException {
+    void loadAcceptCredentialsByDefault() throws ConfigurationException {
+        try {
+            this.acceptCredentialsByDefault = (Boolean) this.objectInspector.getObjectAnnotationAttributeValue(SecurityConfiguration.class, "acceptCredentialsByDefault");
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new ConfigurationException(e);
+        }
+    }
+
+    void build() throws ConfigurationException {
         loadSecurityConfigurationClass();
         loadSecurityConfigurationObject();
-        loadAcceptByDefault();
+        loadAcceptResourcesByDefault();
+        loadAcceptCredentialsByDefault();
         loadAccessValidationMethod();
+        loadCredentialsValidationMethod();
     }
 
 }
