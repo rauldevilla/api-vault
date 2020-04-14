@@ -3,11 +3,16 @@ package com.techandsolve.apivault.util;
 import com.techandsolve.apivault.exception.ConfigurationException;
 import com.techandsolve.apivault.web.filter.Credentials;
 import com.techandsolve.apivault.web.filter.Resource;
+import com.techandsolve.apivault.web.filter.SecurityContext;
+import com.techandsolve.apivault.web.filter.SecurityCredentialsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SecurityConfigurationInstance {
 
@@ -76,5 +81,18 @@ public class SecurityConfigurationInstance {
         }
 
         return acceptCredentialsByDefault;
+    }
+
+    public Credentials[] buildCredentials(HttpServletRequest request) {
+        List<Credentials> credentials = new ArrayList<>();
+        SecurityContext context;
+        for (SecurityCredentialsBuilder builder : this.securityConfigurationInstanceValues.getSecurityCredentialsBuilderObjects()) {
+            context = builder.buildContext(request, this.securityConfigurationInstanceValues.getCredentialsValidaterAnnotation());
+            credentials.add(builder.build(context));
+        }
+        if (credentials.size() == 0) {
+            return null;
+        }
+        return credentials.toArray(new Credentials[]{});
     }
 }

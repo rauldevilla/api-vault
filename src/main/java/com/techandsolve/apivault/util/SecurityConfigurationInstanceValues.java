@@ -4,6 +4,7 @@ import com.techandsolve.apivault.annotations.AccessValidator;
 import com.techandsolve.apivault.annotations.CredentialsValidator;
 import com.techandsolve.apivault.annotations.SecurityConfiguration;
 import com.techandsolve.apivault.exception.ConfigurationException;
+import com.techandsolve.apivault.web.filter.SecurityCredentialsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,8 @@ class SecurityConfigurationInstanceValues {
     private boolean acceptResourcesByDefault = true;
     private boolean acceptCredentialsByDefault = false;
     private Class<?> securityConfigurationClass;
+    private Class<? extends SecurityCredentialsBuilder>[] securityCredentialsBuilderClasses;
+    private SecurityCredentialsBuilder[] securityCredentialsBuilderObjects;
     private Object securityConfigurationObject;
     private Method accessValidationMethod;
     private Method credentialsValidationMethod;
@@ -38,6 +41,14 @@ class SecurityConfigurationInstanceValues {
 
     Method getCredentialsValidationMethod() {
         return credentialsValidationMethod;
+    }
+
+    CredentialsValidator getCredentialsValidaterAnnotation() {
+        return this.credentialsValidationMethod.getAnnotation(CredentialsValidator.class);
+    }
+
+    public SecurityCredentialsBuilder[] getSecurityCredentialsBuilderObjects() {
+        return this.securityCredentialsBuilderObjects;
     }
 
     ObjectInspector getObjectInspector() {
@@ -65,6 +76,26 @@ class SecurityConfigurationInstanceValues {
             }
         }
         logger.info("Working with SecurityConfiguration: " + this.securityConfigurationClass.getName());
+    }
+
+    private void loadSecurityCredentialsBuilderObjects() throws ConfigurationException {
+        SecurityConfiguration securityConfigurationAnnotation = this.securityConfigurationClass.getAnnotation(SecurityConfiguration.class);
+        this.securityCredentialsBuilderClasses = securityConfigurationAnnotation.credentialsBuilders();
+
+        if (this.securityCredentialsBuilderClasses == null || this.securityCredentialsBuilderClasses.length == 0) {
+            throw new ConfigurationException("CredentialsBuilders not found");
+        }
+
+        this.securityCredentialsBuilderObjects = new SecurityCredentialsBuilder[this.securityCredentialsBuilderClasses.length];
+        for (int index = 0; index < this.securityCredentialsBuilderClasses.length; index++) {
+            try {
+                this.securityCredentialsBuilderObjects[index] =
+                        (SecurityCredentialsBuilder) ObjectInspector.getNewInstanceUsingDefaultConstrutor(this.securityCredentialsBuilderClasses[index].getName());
+                logger.info("SecurityCredentialsBuilder " + this.securityCredentialsBuilderClasses[index].getName() + " successfully instantiated");
+            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+                throw new ConfigurationException(e);
+            }
+        }
     }
 
     void loadSecurityConfigurationObject() throws ConfigurationException {
@@ -148,6 +179,7 @@ class SecurityConfigurationInstanceValues {
 
     void build() throws ConfigurationException {
         loadSecurityConfigurationClass();
+        loadSecurityCredentialsBuilderObjects();
         loadSecurityConfigurationObject();
         loadAcceptResourcesByDefault();
         loadAcceptCredentialsByDefault();

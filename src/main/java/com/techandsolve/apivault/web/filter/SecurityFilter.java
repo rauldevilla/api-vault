@@ -38,7 +38,15 @@ public class SecurityFilter implements Filter {
     }
 
     private boolean isAuthenticated(HttpServletRequest request) {
-        Credentials credentials = null;
+        Credentials[] credentials;
+
+        try {
+            credentials = this.helper.buildCredentials(request);
+        } catch (ConfigurationException e) {
+            logger.error("Error creating credentials", e);
+            return false;
+        }
+
         try {
             return this.helper.isAuthenticated(credentials);
         } catch (ConfigurationException e) {

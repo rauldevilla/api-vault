@@ -1,12 +1,11 @@
 package com.techandsolve.apivault.test;
 
 import com.techandsolve.apivault.annotations.AccessValidator;
-import com.techandsolve.apivault.annotations.CredentialsBuilder;
 import com.techandsolve.apivault.annotations.CredentialsValidator;
 import com.techandsolve.apivault.annotations.SecurityConfiguration;
 import com.techandsolve.apivault.web.filter.*;
 
-@SecurityConfiguration
+@SecurityConfiguration(credentialsBuilders = {SecurityBearerCredentialsBuilder.class, SecurityCookieTokenCredentialsBuilder.class})
 public class DummySecurituConfiguration {
 
     @AccessValidator
@@ -14,15 +13,9 @@ public class DummySecurituConfiguration {
         return resource.getUri().startsWith("/public/");
     }
 
-    @CredentialsValidator
+    @CredentialsValidator(cookieName = "dummy-cookie-name")
     public boolean isValidCredentials(BearerTokenCredentials credentials) {
         return credentials.getToken().startsWith("VALID-");
-    }
-
-    @CredentialsBuilder
-    public Credentials buildCredentials(SecurityContext context) {
-        SecurityCredentialsBuilder builder = new BearerCredentialsBuilder();
-        return builder.build(context);
     }
 
 }

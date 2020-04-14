@@ -52,7 +52,7 @@ public class SecurityFilterHelperTest {
     @Test
     public void testValidBearerTokenCredentials() throws ConfigurationException {
         SecurityFilterHelper securityFilterHelper = new SecurityFilterHelper();
-        Credentials credentials = buildValidBearerTokenCredentials();
+        Credentials[] credentials = new Credentials[]{buildValidBearerTokenCredentials()};
         boolean isValid = securityFilterHelper.isAuthenticated(credentials);
         assertThat(isValid).isTrue();
     }
@@ -60,7 +60,7 @@ public class SecurityFilterHelperTest {
     @Test
     public void testInvalidBearerTokenCredentials() throws ConfigurationException {
         SecurityFilterHelper securityFilterHelper = new SecurityFilterHelper();
-        Credentials credentials = buildInvalidBearerTokenCredentials();
+        Credentials[] credentials = new Credentials[]{buildInvalidBearerTokenCredentials()};
         boolean isValid = securityFilterHelper.isAuthenticated(credentials);
         assertThat(isValid).isFalse();
     }

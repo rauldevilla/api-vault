@@ -15,36 +15,36 @@ public class CredentialsBuilderTest {
 
     private static Logger logger = LoggerFactory.getLogger(CredentialsBuilderTest.class);
 
-    private static void decoreBearerCredentialsContext(SecurityContext context) {
+    private static void decorateBearerCredentialsContext(SecurityContext context) {
         DummyHttpSerlvletRequest request = context.getRequest() != null ? (DummyHttpSerlvletRequest) context.getRequest() : new DummyHttpSerlvletRequest();
-        request.addHeader(BearerCredentialsBuilder.AUTHORIZATION_HEADER_NAME, BearerCredentialsBuilder.BEARER + " " + VALID_TOKEN);
+        request.addHeader(SecurityBearerCredentialsBuilder.AUTHORIZATION_HEADER_NAME, SecurityBearerCredentialsBuilder.BEARER + " " + VALID_TOKEN);
         context.setRequest(request);
     }
 
-    private static void decoreCookiesTokenCredentialsContext(SecurityContext context) {
+    private static void decorateCookiesTokenCredentialsContext(SecurityContext context) {
         final String cookieName = "test-cookie-token";
         DummyHttpSerlvletRequest request = context.getRequest() != null ? (DummyHttpSerlvletRequest) context.getRequest() : new DummyHttpSerlvletRequest();
         request.addCookie(new Cookie(cookieName, VALID_TOKEN));
         context.setRequest(request);
-        context.put(CookieTokenCredentialsBuilder.SECURITY_CONTEXT_KEY_COOKIE_NAME, cookieName);
+        context.put(SecurityCookieTokenCredentialsBuilder.SECURITY_CONTEXT_KEY_COOKIE_NAME, cookieName);
     }
 
     @Test
     public void testBuildBearerCredentials() {
-        SecurityCredentialsBuilder builder = new BearerCredentialsBuilder();
+        SecurityCredentialsBuilder builder = new SecurityBearerCredentialsBuilder();
         SecurityContext context = new SecurityContext();
-        decoreBearerCredentialsContext(context);
+        decorateBearerCredentialsContext(context);
         Credentials credentials = builder.build(context);
         logger.debug("Credentials: " + credentials);
         assertThat(credentials).isNotNull();
-        assertThat(credentials.toString()).startsWith(BearerCredentialsBuilder.BEARER);
+        assertThat(credentials.toString()).startsWith(SecurityBearerCredentialsBuilder.BEARER);
     }
 
     @Test
     public void testBuildCookiesTokenCredentials() {
-        SecurityCredentialsBuilder builder = new CookieTokenCredentialsBuilder();
+        SecurityCredentialsBuilder builder = new SecurityCookieTokenCredentialsBuilder();
         SecurityContext context = new SecurityContext();
-        decoreCookiesTokenCredentialsContext(context);
+        decorateCookiesTokenCredentialsContext(context);
         Credentials credentials = builder.build(context);
         logger.debug("Credentials: " + credentials);
         assertThat(credentials).isNotNull();

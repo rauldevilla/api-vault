@@ -1,31 +1,17 @@
 package com.techandsolve.apivault.web.filter;
 
+import com.techandsolve.apivault.annotations.CredentialsValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BearerCredentialsBuilder implements SecurityCredentialsBuilder {
+import javax.servlet.http.HttpServletRequest;
 
-    private static Logger logger = LoggerFactory.getLogger(BearerCredentialsBuilder.class);
+public class SecurityBearerCredentialsBuilder implements SecurityCredentialsBuilder {
+
+    private static Logger logger = LoggerFactory.getLogger(SecurityBearerCredentialsBuilder.class);
 
     public static final String AUTHORIZATION_HEADER_NAME = "Authorization";
     public static final String BEARER = "Bearer ";
-
-    /*
-    private static String getTokenFromCookies(SecurityContext context) {
-        Cookie[] cookies = context.getRequest().getCookies();
-        final String securityCookieName = context.getSecurityCookieName() != null || context.getSecurityCookieName().trim().equals("") ?
-                                          context.getSecurityCookieName().trim() :
-                                          SecurityContext.SECURITY_COOKIE_NAME;
-        if (cookies != null && cookies.length > 0){
-            for (Cookie c : cookies) {
-                if (securityCookieName.equals(c.getName())) {
-                    return c.getValue();
-                }
-            }
-        }
-        return null;
-    }
-    */
 
     private static String getTokenFromHeaders(SecurityContext context) {
         String header = context.getRequest().getHeader(AUTHORIZATION_HEADER_NAME);
@@ -52,5 +38,12 @@ public class BearerCredentialsBuilder implements SecurityCredentialsBuilder {
         BearerTokenCredentials credentials = new BearerTokenCredentials();
         credentials.setToken(getToken(context));
         return credentials;
+    }
+
+    @Override
+    public SecurityContext buildContext(HttpServletRequest request, CredentialsValidator credentialsValidatorAnnotation) {
+        SecurityContext context = new SecurityContext();
+        context.setRequest(request);
+        return context;
     }
 }

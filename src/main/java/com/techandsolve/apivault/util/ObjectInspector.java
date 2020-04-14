@@ -66,7 +66,6 @@ public class ObjectInspector {
 
         List<Method> annotatedMethods = new ArrayList<>();
         for (Method m : methods) {
-            logger.debug("Annotation: " + annotationType.getName() + " - Method: " + m.getName() + " [" + m.isAnnotationPresent(annotationType) + "]");
             if (m.isAnnotationPresent(annotationType)) {
                 annotatedMethods.add(m);
             }
