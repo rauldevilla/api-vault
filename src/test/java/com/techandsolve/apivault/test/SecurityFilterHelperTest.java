@@ -1,10 +1,8 @@
 package com.techandsolve.apivault.test;
 
 import com.techandsolve.apivault.exception.ConfigurationException;
-import com.techandsolve.apivault.web.filter.BearerTokenCredentials;
-import com.techandsolve.apivault.web.filter.Credentials;
-import com.techandsolve.apivault.web.filter.Resource;
-import com.techandsolve.apivault.web.filter.SecurityFilterHelper;
+import com.techandsolve.apivault.web.filter.*;
+
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Test;
@@ -35,6 +33,13 @@ public class SecurityFilterHelperTest {
         assertThat(hasAccess).isFalse();
     }
 
+    private static Credentials buildValidCookieTokenCredentials() {
+        CookieTokenCredentials credentials = new CookieTokenCredentials();
+        credentials.setToken("VALID-991231-b75e-4c08-9463-c2a548e3456u");
+        credentials.setCookieName("test-cookie-name");
+        return credentials;
+    }
+
     private static Credentials buildBearerTokenCredentials(String bearerToken) {
         BearerTokenCredentials credentials = new BearerTokenCredentials();
         credentials.setToken(bearerToken);
@@ -63,5 +68,16 @@ public class SecurityFilterHelperTest {
         Credentials[] credentials = new Credentials[]{buildInvalidBearerTokenCredentials()};
         boolean isValid = securityFilterHelper.isAuthenticated(credentials);
         assertThat(isValid).isFalse();
+    }
+
+    @Test
+    public void testMultipleCredentials() throws ConfigurationException {
+        SecurityFilterHelper securityFilterHelper = new SecurityFilterHelper();
+        Credentials[] credentials = new Credentials[]{
+                                            buildInvalidBearerTokenCredentials(),
+                                            buildValidCookieTokenCredentials()
+                                    };
+        boolean isValid = securityFilterHelper.isAuthenticated(credentials);
+        assertThat(isValid).isTrue();
     }
 }

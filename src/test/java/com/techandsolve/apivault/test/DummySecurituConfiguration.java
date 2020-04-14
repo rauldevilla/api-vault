@@ -14,8 +14,15 @@ public class DummySecurituConfiguration {
     }
 
     @CredentialsValidator(cookieName = "dummy-cookie-name")
-    public boolean isValidCredentials(BearerTokenCredentials credentials) {
-        return credentials.getToken().startsWith("VALID-");
+    public boolean isValidCredentials(Credentials credentials) {
+
+        if (credentials instanceof BearerTokenCredentials) {
+            return ((BearerTokenCredentials)credentials).getToken().startsWith("VALID-");
+        } else if (credentials instanceof CookieTokenCredentials) {
+            return ((CookieTokenCredentials)credentials).getToken().startsWith("VALID-");
+        }
+
+        return false;
     }
 
 }
