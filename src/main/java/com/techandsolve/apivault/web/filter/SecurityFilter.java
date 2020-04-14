@@ -22,7 +22,7 @@ public class SecurityFilter implements Filter {
     }
 
     @Override
-    public final void init(FilterConfig config) throws ServletException {
+    public final void init(FilterConfig config) {
         this.config = config;
     }
 
