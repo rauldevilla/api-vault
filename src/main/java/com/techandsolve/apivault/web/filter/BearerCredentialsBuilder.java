@@ -3,8 +3,6 @@ package com.techandsolve.apivault.web.filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.Cookie;
-
 public class BearerCredentialsBuilder implements SecurityCredentialsBuilder {
 
     private static Logger logger = LoggerFactory.getLogger(BearerCredentialsBuilder.class);
@@ -12,6 +10,7 @@ public class BearerCredentialsBuilder implements SecurityCredentialsBuilder {
     public static final String AUTHORIZATION_HEADER_NAME = "Authorization";
     public static final String BEARER = "Bearer ";
 
+    /*
     private static String getTokenFromCookies(SecurityContext context) {
         Cookie[] cookies = context.getRequest().getCookies();
         final String securityCookieName = context.getSecurityCookieName() != null || context.getSecurityCookieName().trim().equals("") ?
@@ -26,6 +25,7 @@ public class BearerCredentialsBuilder implements SecurityCredentialsBuilder {
         }
         return null;
     }
+    */
 
     private static String getTokenFromHeaders(SecurityContext context) {
         String header = context.getRequest().getHeader(AUTHORIZATION_HEADER_NAME);
@@ -43,9 +43,6 @@ public class BearerCredentialsBuilder implements SecurityCredentialsBuilder {
 
     private static String getToken(SecurityContext context) {
         String token = getTokenFromHeaders(context);
-        if (context.isTokenInCookies() && token == null) {
-            token = getTokenFromCookies(context);
-        }
         logger.debug("Token: " + token);
         return token;
     }
@@ -53,7 +50,7 @@ public class BearerCredentialsBuilder implements SecurityCredentialsBuilder {
     @Override
     public Credentials build(SecurityContext context) {
         BearerTokenCredentials credentials = new BearerTokenCredentials();
-        credentials.setBearerToken(getToken(context));
+        credentials.setToken(getToken(context));
         return credentials;
     }
 }

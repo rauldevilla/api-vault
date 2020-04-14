@@ -37,7 +37,7 @@ public class SecurityFilterHelperTest {
 
     private static Credentials buildBearerTokenCredentials(String bearerToken) {
         BearerTokenCredentials credentials = new BearerTokenCredentials();
-        credentials.setBearerToken(bearerToken);
+        credentials.setToken(bearerToken);
         return credentials;
     }
 

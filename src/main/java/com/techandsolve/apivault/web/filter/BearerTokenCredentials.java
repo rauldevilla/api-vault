@@ -4,18 +4,18 @@ public class BearerTokenCredentials implements Credentials {
 
     public static final String BEARER_TOKEN_LITERAL = "Bearer";
 
-    private String bearerToken;
+    private String token;
 
-    public String getBearerToken() {
-        return bearerToken;
+    public String getToken() {
+        return token;
     }
 
-    public void setBearerToken(String bearerToken) {
-        this.bearerToken = bearerToken;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override
     public String toString() {
-        return BEARER_TOKEN_LITERAL + " " + this.bearerToken;
+        return BEARER_TOKEN_LITERAL + " " + this.token;
     }
 }

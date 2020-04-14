@@ -6,8 +6,6 @@ import com.techandsolve.apivault.annotations.CredentialsValidator;
 import com.techandsolve.apivault.annotations.SecurityConfiguration;
 import com.techandsolve.apivault.web.filter.*;
 
-import javax.servlet.http.HttpServletRequest;
-
 @SecurityConfiguration
 public class DummySecurituConfiguration {
 
@@ -18,7 +16,7 @@ public class DummySecurituConfiguration {
 
     @CredentialsValidator
     public boolean isValidCredentials(BearerTokenCredentials credentials) {
-        return credentials.getBearerToken().startsWith("VALID-");
+        return credentials.getToken().startsWith("VALID-");
     }
 
     @CredentialsBuilder

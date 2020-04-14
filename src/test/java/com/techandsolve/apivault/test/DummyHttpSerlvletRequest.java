@@ -1,7 +1,5 @@
 package com.techandsolve.apivault.test;
 
-import com.techandsolve.apivault.web.filter.BearerCredentialsBuilder;
-
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.BufferedReader;
@@ -12,11 +10,16 @@ import java.util.*;
 
 public class DummyHttpSerlvletRequest implements HttpServletRequest {
 
-    private static final Map<String, String> HEADERS = new HashMap<>();
+    private Map<String, String> headers = new HashMap<>();
+    private List<Cookie> cookies = new ArrayList<>();
 
-    static {
-        HEADERS.put(BearerCredentialsBuilder.AUTHORIZATION_HEADER_NAME, BearerCredentialsBuilder.BEARER + " VALID-804514e5-b75e-4c08-9463-c2a548e5780a");
-    };
+    public void addHeader(String name, String value) {
+        this.headers.put(name, value);
+    }
+
+    public void addCookie(Cookie cookie) {
+        this.cookies.add(cookie);
+    }
 
     @Override
     public String getAuthType() {
@@ -25,7 +28,7 @@ public class DummyHttpSerlvletRequest implements HttpServletRequest {
 
     @Override
     public Cookie[] getCookies() {
-        return new Cookie[0];
+        return this.cookies.toArray(new Cookie[]{});
     }
 
     @Override
@@ -35,17 +38,17 @@ public class DummyHttpSerlvletRequest implements HttpServletRequest {
 
     @Override
     public String getHeader(String name) {
-        return HEADERS.get(name);
+        return headers.get(name);
     }
 
     @Override
     public Enumeration<String> getHeaders(String name) {
-        return Collections.enumeration(HEADERS.values());
+        return Collections.enumeration(headers.values());
     }
 
     @Override
     public Enumeration<String> getHeaderNames() {
-        return Collections.enumeration(HEADERS.keySet());
+        return Collections.enumeration(headers.keySet());
     }
 
     @Override
