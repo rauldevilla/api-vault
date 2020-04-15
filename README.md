@@ -46,6 +46,33 @@ The request is delegated to the requested endpoint and it will do its job.
 ## How do I use it in an Spring boot application?
 
 ### 1. Configuration
+First, you have to implements the configuration class.  This class is very important, because it implements the methods **api-vault** invokes to validate the credentials and the access to any resource you want to secure in your application.
+
+```java
+import com.techandsolve.apivault.annotations.AccessValidator;
+import com.techandsolve.apivault.annotations.CredentialsValidator;
+import com.techandsolve.apivault.annotations.SecurityConfiguration;
+import com.techandsolve.apivault.web.filter.*;
+
+@SecurityConfiguration(credentialsBuilders = {SecurityBearerCredentialsBuilder.class})
+public class MyApiVaultConfigurationClass {
+    @AccessValidator
+    public boolean hasAccess(Resource resource, Credentials[] credentials) {
+        return resource.getUri().startsWith("/public/");
+    }
+
+    @CredentialsValidator
+    public boolean isValidCredentials(Credentials credentials) {
+
+        if (credentials instanceof BearerTokenCredentials) {
+            return ((BearerTokenCredentials)credentials).getToken().startsWith("VALID-");
+        }
+
+        return false;
+    }
+}
+```
+
 
 ### 2. Filter
 
