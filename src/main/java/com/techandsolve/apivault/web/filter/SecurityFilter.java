@@ -13,7 +13,7 @@ public class SecurityFilter implements Filter {
 
     private static Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
 
-    private SecurityFilterHelper helper;
+    private SecurityFilterHelper helper = new SecurityFilterHelper();
 
     private FilterConfig config;
 
@@ -22,7 +22,7 @@ public class SecurityFilter implements Filter {
     }
 
     @Override
-    public final void init(FilterConfig config) {
+    public final void init(FilterConfig config) throws ServletException {
         this.config = config;
     }
 
