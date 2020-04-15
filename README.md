@@ -43,7 +43,7 @@ Once **api-vault** knows that the credentials are valid, it invokes your custom 
 #### 4. complete the chain
 The request is delegated to the requested endpoint and it will do its job.
 
-## How do I use it in and Spring boot application?
+## How do I use it in an Spring boot application?
 
 ### 1. Configuration
 
