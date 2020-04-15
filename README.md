@@ -56,14 +56,16 @@ import com.techandsolve.apivault.web.filter.*;
 
 @SecurityConfiguration(credentialsBuilders = {SecurityBearerCredentialsBuilder.class})
 public class MyApiVaultConfigurationClass {
+
     @AccessValidator
     public boolean hasAccess(Resource resource, Credentials[] credentials) {
+        //HERE, YOUR RESOURCE ACCESS VALIDATION CODE
         return resource.getUri().startsWith("/public/");
     }
 
     @CredentialsValidator
     public boolean isValidCredentials(Credentials credentials) {
-
+        //HERE, YOUR CREDENTIALS VALIDATION CODE
         if (credentials instanceof BearerTokenCredentials) {
             return ((BearerTokenCredentials)credentials).getToken().startsWith("VALID-");
         }
