@@ -41,21 +41,21 @@ public class SecurityConfigurationInstance {
         this.securityConfigurationInstanceValues.build();
     }
 
-    private boolean executeConfigurationAccessValidationMethod(Method accessValidationMethod, Resource resource) throws IllegalAccessException, InvocationTargetException {
-        return (Boolean) this.securityConfigurationInstanceValues.getObjectInspector().invoke(accessValidationMethod, new Object[]{resource});
+    private boolean executeConfigurationAccessValidationMethod(Method accessValidationMethod, Resource resource, Credentials[] credentials) throws IllegalAccessException, InvocationTargetException {
+        return (Boolean) this.securityConfigurationInstanceValues.getObjectInspector().invoke(accessValidationMethod, new Object[]{resource, credentials});
     }
 
     private boolean executeConfigurationCredentialsValidationMethod(Method credentiaslValidationMethod, Credentials credentials) throws IllegalAccessException, InvocationTargetException {
         return (Boolean) this.securityConfigurationInstanceValues.getObjectInspector().invoke(credentiaslValidationMethod, new Object[]{credentials});
     }
 
-    public boolean hasAccess(Resource resource) {
+    public boolean hasAccess(Resource resource, Credentials[] credentials) {
         final Method accessValidationMethod = this.securityConfigurationInstanceValues.getAccessValidationMethod();
         final boolean acceptResourcesByDefault = this.securityConfigurationInstanceValues.getAcceptResourcesByDefault();
         if (accessValidationMethod != null) {
             try {
                 logger.debug("Validating access to \"" + resource + "\" ...");
-                return executeConfigurationAccessValidationMethod(accessValidationMethod, resource);
+                return executeConfigurationAccessValidationMethod(accessValidationMethod, resource, credentials);
             } catch (Exception e) {
                 logger.error("Error executing Access Validation method " + accessValidationMethod.getName() + " for resource " + resource + ". " +
                              (acceptResourcesByDefault ? "Allowing access" : "Rejecting access") + " by default", e);
@@ -94,5 +94,9 @@ public class SecurityConfigurationInstance {
             return null;
         }
         return credentials.toArray(new Credentials[]{});
+    }
+
+    public boolean acceptCredentialsByDefault() {
+        return this.securityConfigurationInstanceValues.getAcceptCredentialsByDefault();
     }
 }

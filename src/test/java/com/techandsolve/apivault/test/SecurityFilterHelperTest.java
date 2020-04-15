@@ -16,7 +16,7 @@ public class SecurityFilterHelperTest {
         Resource resource = new Resource();
         resource.setUri("/public/this_is_the_uri");
 
-        boolean hasAccess = securityFilterHelper.hasAccess(resource);
+        boolean hasAccess = securityFilterHelper.hasAccess(resource, new DummyCredentials[]{});
 
         assertThat(hasAccess).isTrue();
     }
@@ -28,7 +28,7 @@ public class SecurityFilterHelperTest {
         Resource resource = new Resource();
         resource.setUri("/private/this_is_the_uri_2");
 
-        boolean hasAccess = securityFilterHelper.hasAccess(resource);
+        boolean hasAccess = securityFilterHelper.hasAccess(resource, new DummyCredentials[]{});
 
         assertThat(hasAccess).isFalse();
     }

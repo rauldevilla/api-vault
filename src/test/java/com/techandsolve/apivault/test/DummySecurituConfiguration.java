@@ -9,7 +9,7 @@ import com.techandsolve.apivault.web.filter.*;
 public class DummySecurituConfiguration {
 
     @AccessValidator
-    public boolean hasAccess(Resource resource) {
+    public boolean hasAccess(Resource resource, Credentials[] credentials) {
         return resource.getUri().startsWith("/public/");
     }
 

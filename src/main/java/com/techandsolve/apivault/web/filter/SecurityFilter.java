@@ -26,27 +26,31 @@ public class SecurityFilter implements Filter {
         this.config = config;
     }
 
-    private boolean hasAccess(String uri) {
+    private boolean hasAccess(String uri, Credentials[] credentials) {
         Resource resource = new Resource();
         resource.setUri(uri);
         try {
-            return this.helper.hasAccess(resource);
+            return this.helper.hasAccess(resource, credentials);
         } catch (ConfigurationException e) {
             logger.error("Exception in hasAccess", e);
             return false;
         }
     }
 
-    private boolean isAuthenticated(HttpServletRequest request) {
+
+    private Credentials[] getCredetials(HttpServletRequest request) {
         Credentials[] credentials;
 
         try {
             credentials = this.helper.buildCredentials(request);
         } catch (ConfigurationException e) {
             logger.error("Error creating credentials", e);
-            return false;
+            return null;
         }
+        return credentials;
+    }
 
+    private boolean isAuthenticated(Credentials[] credentials) {
         try {
             return this.helper.isAuthenticated(credentials);
         } catch (ConfigurationException e) {
@@ -72,14 +76,15 @@ public class SecurityFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        if (!isAuthenticated(httpRequest)) {
+        Credentials[] credentials = getCredetials(httpRequest);
+        if (!isAuthenticated(credentials)) {
             logger.warn("Invalid authentication from " + getRemoteAddress(httpRequest));
             httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
         String uri = getURI(httpRequest);
-        if (!hasAccess(uri)) {
+        if (!hasAccess(uri, credentials)) {
             httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
