@@ -1,7 +1,7 @@
 # API-VAULT
 **api-vault** is an api for secure web services in a very simple way.
 
-## How to use it?
+## How does it work?
 
 **api-vault** is based on the concept that you already know how to validate if an user has access to certain resource.  **api-vault** filters the requests to your business api and give you all the information you need to decide whether or not grant the access to the requested resource.  Before that, **api-vault** give you the control to validate if the credentials used to make the invocations are valid.
 
@@ -42,3 +42,11 @@ Once **api-vault** knows that the credentials are valid, it invokes your custom 
 
 #### 4. complete the chain
 The request is delegated to the requested endpoint and it will do its job.
+
+## How do I use it in and Spring boot application?
+
+### 1. Configuration
+
+### 2. Filter
+
+
