@@ -1,3 +1,4 @@
+
 # API-VAULT
 **api-vault** is an api for secure web services in a very simple way.
 
@@ -75,7 +76,9 @@ public class MyApiVaultConfigurationClass {
 }
 ```
 
+| **Attribute** | **Description** |  **Allowed values** |
+|--|--|--|
+| `acceptResourcesByDefault` | Indicates whether or not allow access, in case the `@AccessValidator` fails. | `true` / `false`.  Default value `true` |
+
 
 ### 2. Filter
-
-
