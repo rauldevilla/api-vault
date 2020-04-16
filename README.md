@@ -79,10 +79,12 @@ public class MyApiVaultConfigurationClass {
 #### `@SecurityConfiguration` annotation
 This annotation indicates that the annotated class will perform as **api-vault** framework configuration class.  The following table contains the list of attributes for `@SecurityConfiguration`
 
+
 | **Attribute** | **Description** |  **Allowed values** |
 |--|--|--|
 | `acceptResourcesByDefault` | Indicates whether or not allow access, in case the `@AccessValidator` fails, or it was not implemented. | `true` / `false`.  Default value `true` |
 | `acceptCredentialsByDefault` | Indicates whether or not qualify the received credentials as valid, in case the `@CredentialsValidator` fails, or it was not implemented. | `true` / `false`.  Default value `false` |
+| `credentialsBuilders` | Specifies which classes will be used to build the credentials contained in the [HttpServletRequest](https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html) sent from the client of your api. The build order used is the same order as you specify the values of this property | There are two Out-of-the-box Credentials Builder Implementations: `com.techandsolve.apivault.web.filter.SecurityBearerCredentialsBuilder` and `com.techandsolve.apivault.web.filter.SecurityCookieTokenCredentialsBuilder`|
 
 
 ### 2. Filter
