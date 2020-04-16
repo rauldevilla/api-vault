@@ -76,12 +76,10 @@ public class MyApiVaultConfigurationClass {
 }
 ```
 
-#### `@SecurityConfiguration` annotation
-This annotation indicates that the annotated class will perform as **api-vault** framework configuration class.  The following table contains the list of attributes for `@SecurityConfiguration`
-
 | **Attribute** | **Description** |  **Allowed values** |
 |--|--|--|
-| `acceptResourcesByDefault` | Indicates whether or not allow access, in case the `@AccessValidator` fails. | `true` / `false`.  Default value `true` |
+| `acceptResourcesByDefault` | Indicates whether or not allow access, in case the `@AccessValidator` fails, or it was not implemented. | `true` / `false`.  Default value `true` |
+| `acceptCredentialsByDefault` | Indicates whether or not qualify the received credentials as valid, in case the `@CredentialsValidator` fails, or it was not implemented. | `true` / `false`.  Default value `false` |
 
 
 ### 2. Filter
