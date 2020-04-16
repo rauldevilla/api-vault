@@ -38,7 +38,7 @@ public class SecurityFilter implements Filter {
     }
 
 
-    private Credentials[] getCredetials(HttpServletRequest request) {
+    private Credentials[] getCredentials(HttpServletRequest request) {
         Credentials[] credentials;
 
         try {
@@ -76,7 +76,7 @@ public class SecurityFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        Credentials[] credentials = getCredetials(httpRequest);
+        Credentials[] credentials = getCredentials(httpRequest);
         if (!isAuthenticated(credentials)) {
             logger.warn("Invalid authentication from " + getRemoteAddress(httpRequest));
             httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
