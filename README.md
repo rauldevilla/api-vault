@@ -98,6 +98,6 @@ The Credentials Validation Method  is the one used to verify whether or not the 
 | Return type | It must to be `boolean` |
 | Parameters | This method only receives one parameter of type `com.techandsolve.apivault.web.filter.Credentials` |
 
-As you can see, the method must to be annotated with `@CredentialsValidator`.  This annotation only have one optional attribute, `cookieName`.  This is used when you have one `credentialsBuilder`of the type `com.techandsolve.apivault.web.filter.SecurityCookieTokenCredentialsBuilder` to specify the name of the cookie in the [HttpServletRequest](https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html) wich contains the value of the authentication token.
+As you can see, the method must to be annotated with `@CredentialsValidator`.  This annotation only have one optional attribute, `cookieName`.  This is used when you have one `credentialsBuilder`of the type `com.techandsolve.apivault.web.filter.SecurityCookieTokenCredentialsBuilder` to specify the name of the cookie in the [HttpServletRequest](https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html) which contains the value of the authentication token that is going to be validated.
 
 ### 2. Filter
