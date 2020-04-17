@@ -100,4 +100,7 @@ The Credentials Validation Method  is the one used to verify whether or not the 
 
 As you can see, the method must to be annotated with `@CredentialsValidator`.  This annotation only have one optional attribute, `cookieName`.  This is used when you have one `credentialsBuilder`of the type `com.techandsolve.apivault.web.filter.SecurityCookieTokenCredentialsBuilder` to specify the name of the cookie in the [HttpServletRequest](https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html) which contains the value of the authentication token that is going to be validated.
 
+#### Access Validation Method
+This is the method who give you the control to grant or reject the access to every specific URL resource in your api.  The Access Validation Method has the following structure:
+
 ### 2. Filter
