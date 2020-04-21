@@ -61,12 +61,14 @@ public class MyApiVaultConfigurationClass {
     @AccessValidator
     public boolean hasAccess(Resource resource, Credentials[] credentials) {
         //HERE, YOUR RESOURCE ACCESS VALIDATION CODE
+        //THIS CODE IS JUST AN EXAMPLE
         return resource.getUri().startsWith("/public/");
     }
 
     @CredentialsValidator
     public boolean isValidCredentials(Credentials credentials) {
         //HERE, YOUR CREDENTIALS VALIDATION CODE
+        //THIS CODE IS JUST AN EXAMPLE
         if (credentials instanceof BearerTokenCredentials) {
             return ((BearerTokenCredentials)credentials).getToken().startsWith("VALID-");
         }
