@@ -114,3 +114,20 @@ As you can see, the method must to be annotated with `@CredentialsValidator`.  T
 | Parameters | This method receives two parameters: The first one has ``com.techandsolve.apivault.web.filter.Resource`` type. It indicates the resource who is been requested, i.e: ``/client/12345``.  Second, is an array of ``com.techandsolve.apivault.web.filter.Credential``.  It indicates all the valid credentials that the requester send in the [HttpServletRequest](https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html).  The concrete object type in this array depends of the configuration of the parameter ``credentialsBuilders`` of the annotation ``com.techandsolve.apivault.annotations.SecurityConfiguration``  |
 
 ### 2. Filter
+
+Now it's time to use the framework.  This is the most simple part.  Once you implemented the Configuration class, it's time to configure a servlet filter in your application.  This servlet filter must extends the class ``com.techandsolve.apivault.web.filter.SecurityFilter``.  The following example, is a real world example, and yes, is that simple:
+
+````java
+package com.apivault.example;
+
+import com.techandsolve.apivault.web.filter.SecurityFilter;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+@Component
+@Order(0)
+public class MainSecurityFilter extends SecurityFilter {
+}
+````
+
+This is a filter in an [Spring Boot](https://spring.io/projects/spring-boot) microservice.  That's why you don't see the [@WebFilter](https://docs.oracle.com/javaee/7/api/javax/servlet/annotation/WebFilter.html) annotation.
