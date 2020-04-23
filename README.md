@@ -111,6 +111,6 @@ As you can see, the method must to be annotated with `@CredentialsValidator`.  T
 | Name | As you wish. I suggest to use clean code naming rules |
 | Access modifier | It must to be `public` |
 | Return type | It must to be `boolean` |
-| Parameters | This method receives two parameter: |
+| Parameters | This method receives two parameters: The first one has ``com.techandsolve.apivault.web.filter.Resource`` type. It indicates the resource who is been requested, i.e: ``/client/12345``.  Second, is an array of ``com.techandsolve.apivault.web.filter.Credential``.  It indicates all the valid credentials that the requester send in the [HttpServletRequest](https://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html).  The concrete object type in this array depends of the configuration of the parameter ``credentialsBuilders`` of the annotation ``com.techandsolve.apivault.annotations.SecurityConfiguration``  |
 
 ### 2. Filter
